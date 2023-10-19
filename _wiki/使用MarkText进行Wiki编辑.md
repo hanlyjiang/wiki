@@ -10,8 +10,6 @@ isTop: false
 
 # 使用 MarkText 进行 MD 编辑
 
-
-
 ## 功能介绍
 
 - 加载目录
@@ -59,10 +57,6 @@ isTop: false
 ## 图表支持
 
 > 待补充
-
-
-
-
 
 # 配置
 
