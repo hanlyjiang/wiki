@@ -6,8 +6,17 @@ published: true
 hideInList: false
 feature: 
 isTop: false
+
 ---
 
-# 命令工具
+# 终端工具
 
-终端使用 Windows Terminal
+终端使用 Windows Terminal，包括以下几个：
+
+1. Bash（Git）
+
+2. PowerShell
+
+3. WSL
+
+## 软件
