@@ -64,6 +64,8 @@ isTop: false
 
 ![](_assets/使用MarkText进行Wiki编辑/2023-10-19-22-02-52-image.png)
 
+配置值：`_assets/${filename}`
+
 - 使用一个顶层目录存储，可以保持整洁
 
 - 使用文件名，可以方便识别关系，所以文件的命名就很重要
