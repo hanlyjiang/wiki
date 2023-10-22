@@ -21,7 +21,11 @@ function gen_index() {
   local dirName=$(basename "$folder" )
   echo -e "\ngen_index $folder $baseDir"
   local readme="$folder/README.md"
-  echo "# $dirName" > "$readme"
+  if [ -z "$pathToBaseDir" ];then
+    echo "# Home" > "$readme"
+  else
+    echo "# $dirName" > "$readme"
+  fi
   echo "" >> "$readme"
 
   for item in "$folder"/*; do
@@ -60,7 +64,11 @@ function gen_sidebar() {
   local targetFile="$currentDir/_sidebar.md"
 
   echo -e "\n" >> "$targetFile"
-  echo "* $dirName" > "$targetFile"
+  if [ -z "$pathToBaseDir" ];then
+    echo "* Home" > "$targetFile"
+  else
+    echo "* $dirName" > "$targetFile"
+  fi
  
   # 遍历当前目录
   for item in "$currentDir"/*; do
