@@ -1,0 +1,3 @@
+# _SCRIPTS
+
+- [GEN_NAVI](/_SCRIPTS/GEN_NAVI.md)

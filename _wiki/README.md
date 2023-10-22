@@ -1,13 +1,6 @@
----
+# _WIKI
 
----
-
-# Read Me
-
-此目录用于记录本 Wiki 自身相关的内容。
-
-可包括：
-
-1. 内容组织；
-
-2. 工具使用；
+- [_ASSETS](/_WIKI/_ASSETS/)
+- [_SCRIPTS](/_WIKI/_SCRIPTS/)
+- [INDEX](/_WIKI/INDEX.md)
+- [使用MARKTEXT进行WIKI编辑](/_WIKI/使用MARKTEXT进行WIKI编辑.md)

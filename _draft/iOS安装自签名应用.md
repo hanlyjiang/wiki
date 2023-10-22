@@ -69,14 +69,12 @@ Finder 中打开：`~/Library/MobileDevice/Provisioning Profiles`，然后找到
 
 ![](_assets/iOS安装自签名应用/2023-10-22-16-11-12-IMG_0021[2].PNG) 
 
-
-
 ## 使用 IPA ResignTool 对 IPA 进行签名
-
-
 
 ## 安装应用
 
 ### 安装轻松签
 
-由于我们的系统是iOS17，所以自行对轻松签的 ipa 进行签名，下载轻松签的 iPA 文件（下载链接：[轻松签 (yyyue.xyz)](https://esign.yyyue.xyz/)，打开后选择 `下载IPA`）
+由于我们的系统是iOS17，所以自行对轻松签的 ipa 进行签名，下载轻松签的 iPA 文件（下载链接：[轻松签 (yyyue.xyz)](https://esign.yyyue.xyz/)，打开后选择 `下载IPA`），下载完成后得到文件：`esign_4.8.2_unsigned.ipa`
+
+然后使用  IPA ResignTool 工具对其进行签名
