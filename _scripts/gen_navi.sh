@@ -1,5 +1,19 @@
 #!/bin/bash
 
+function gen_navibar() {
+   # 当前目录
+  local currentDir=$1
+  local targetFile="$currentDir/_navbar.md"
+  echo "* [Home](/)" > "$targetFile"
+  for item in "$currentDir"/*; do
+    if [ -d "$item" ] && [[ $(basename "$item") != _* ]]; then
+      local item_name=$(basename "$item")
+      echo "* [${item_name%.*}](/${item_name%.*}/)" >> "$targetFile"
+    fi
+  done
+  echo "* [关于我](/_about/)" >> "$targetFile"
+}
+
 # 生成内容索引
 function gen_index() {
   local folder=$1
@@ -74,5 +88,23 @@ function gen_sidebar() {
 }
 
 
-gen_index "$(pwd)" ""
-gen_sidebar "$(pwd)" ""
+function refresh_navibar(){
+   gen_navibar  "$(pwd)" ""
+}
+
+function refresh_index(){
+   gen_index "$(pwd)" ""
+}
+
+function refresh_sidebar(){
+  gen_sidebar "$(pwd)" ""
+}
+
+if [ "$1" = "start" ];then
+  refresh_index
+  refresh_navibar
+  refresh_sidebar
+fi
+
+
+
