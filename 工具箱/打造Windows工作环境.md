@@ -20,3 +20,21 @@ isTop: false
 3. WSL
 
 ## 软件
+
+
+
+## 恢复网络配置
+
+```powershell
+netsh winsock reset
+
+netsh int ip reset
+
+ipconfig /release
+
+ipconfig /renew
+
+ipconfig /flushdns
+```
+
+重启电脑
