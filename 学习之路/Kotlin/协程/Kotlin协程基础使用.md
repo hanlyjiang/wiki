@@ -4,7 +4,9 @@
 
 ## 参考文章：
 
-- [Coroutines guide | Kotlin Documentation (kotlinlang.org)](https://kotlinlang.org/docs/coroutines-guide.html)
+- 协程指南: [Coroutines guide | Kotlin Documentation (kotlinlang.org)](https://kotlinlang.org/docs/coroutines-guide.html)
+
+- 协程基础：[Coroutines basics | Kotlin Documentation (kotlinlang.org)](https://kotlinlang.org/docs/coroutines-basics.html)
 
 - [kotlinx.coroutines/README.md at master · Kotlin/kotlinx.coroutines (github.com)](https://github.com/Kotlin/kotlinx.coroutines/blob/master/README.md#using-in-your-projects)
 
