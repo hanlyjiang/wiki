@@ -72,11 +72,98 @@ fun threadName(): String = Thread.currentThread().name
     
     - 可以调用其他挂起函数来挂起协程的执行
 
+- **Scope Builder**：（协程作用域构建器）
+  
+  - 可以通过 coroutineScope 来构建一个自定义的 scope，这个协程 scope 会等到其中所有启动的 children 完成之后才会完成。
+  
+  - 与 runBlocking 的相同与区别：
+    
+    - 都会等到其中的代码块和所有的子协程执行完毕之后才会结束
+    
+    - runBlocking 会阻塞底层线程，期间该线程无法执行其他代码，因为它是一个**普通函数**
+    
+    - coroutineScope 不会阻塞底层线程，因为它是一个**挂起函数**
+  
+  - coroutineScope 可以被用在任意挂起函数内部用于创建多个并行操作。
+
 - **结构化并行**：Kotlin协程遵循的原则，即：新的协程只能在指定的 CoroutineScope 中被启动，这样可以限制协程的生命周期，避免协程的丢失和泄露。外部的协程会一直等到它的所有的子协程都完成后才会完成。
 
+- **Job**
+  
+  - launch 构建器会返回一个 Job 对象，通过这个对象来启动协程，可以通过 Job 来显示的等待协程完成。
 
 
 
+## 示例说明
+
+### runBlocking 即 coroutineScope 的说明
+
+```kotlin
+@Throws(InterruptedException::class)
+public actual fun <T> runBlocking(context: CoroutineContext, block: suspend CoroutineScope.() -> T): T {
+    // ...
+}
+
+
+public suspend fun <R> coroutineScope(block: suspend CoroutineScope.() -> R): R {
+   // ...
+}
+```
+
+### Job
+
+注意如果不使用 join，job 中的内容会在最后输出
+
+```kotlin
+fun main() = runBlocking {
+    val job = launch {
+        delay(1000L)
+        printWord("World!")
+    }
+    printWord("Hello")
+    job.join()
+    printWord("Done")
+}
+
+
+/* output:
+// 使用 join
+2023-10-24 23:22:26.306: Hello @main BlockingCoroutine{Active}@e874448
+2023-10-24 23:22:27.321: World! @main StandaloneCoroutine{Active}@13eb8acf
+2023-10-24 23:22:27.323: Done @main BlockingCoroutine{Active}@e874448
+
+// 不使用 join
+2023-10-24 23:22:57.212: Hello @main BlockingCoroutine{Active}@e874448
+2023-10-24 23:22:57.213: Done @main BlockingCoroutine{Active}@e874448
+2023-10-24 23:22:58.230: World! @main StandaloneCoroutine{Active}@2a70a3d8
+ */
+```
+
+### 轻量级的协程
+
+实际上并没有启动新的线程，全是在当前线程中进行的，所以轻量
+
+```kotlin
+fun main() = runBlocking {
+    repeat(50_000) {
+        launch {
+            delay(2000L)
+            printWord("...")
+        }
+    }
+}
+
+
+/* output:
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@269a37bc
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@106e816c
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@53d3ae89
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@7c98bac0
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@bc85538
+2023-10-24 23:26:46.832: ... @main StandaloneCoroutine{Active}@6fc9c0cc
+...
+ */
+```
 
 
 
