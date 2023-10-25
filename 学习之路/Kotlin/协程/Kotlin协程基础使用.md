@@ -10,8 +10,6 @@
 
 - [kotlinx.coroutines/README.md at master · Kotlin/kotlinx.coroutines (github.com)](https://github.com/Kotlin/kotlinx.coroutines/blob/master/README.md#using-in-your-projects)
 
-
-
 ## 添加依赖
 
 协程并不是语言的基础部分，也不是标准库的内容，是属于官方库，需要添加`kotlinx-coroutines-core`依赖才能使用。
@@ -25,8 +23,6 @@ dependencies {
 ```
 
 > 具体可参考：[kotlinx.coroutines/README.md at master · Kotlin/kotlinx.coroutines (github.com)](https://github.com/Kotlin/kotlinx.coroutines/blob/master/README.md#using-in-your-projects)
-
-
 
 ## 基础
 
@@ -60,11 +56,13 @@ fun threadName(): String = Thread.currentThread().name
 
 - **协程 Builder:**
   
-  - 如上述示例中的 launch，就是一个协程构建器。launch 会启动一个协程，可以独立与其他代码运行。
+  - 如上述示例中的` launch`，就是一个协程构建器。launch 会启动一个协程，可以独立于其他代码运行。
     
     - 注意：launch 是定义在 CoroutineScope 的一个方法，所以必须在 CoroutineScope 中才可以使用， 下面的 runBlocking 就会创建一个 CoroutineScope
   
   - 示例中的 runBlocking 也是一个协程构建器，该构建器可以作为桥将非协程世界（main函数）与协程世界相连接（runBlocking 代码块）；
+  
+  - `async`：
 
 - **挂起函数**
   
@@ -73,6 +71,8 @@ fun threadName(): String = Thread.currentThread().name
   - 挂起函数可以在协程中像正常函数一样使用，不过它还有一些额外的特性：
     
     - 可以调用其他挂起函数来挂起协程的执行
+- **coroutine scope**：
+  - 
 
 - **Scope Builder**：（协程作用域构建器）
   
@@ -88,11 +88,26 @@ fun threadName(): String = Thread.currentThread().name
   
   - coroutineScope 可以被用在任意挂起函数内部用于创建多个并行操作。
 
+- **coroutine context**：
+
+- 
+
 - **结构化并行**：Kotlin协程遵循的原则，即：新的协程只能在指定的 CoroutineScope 中被启动，这样可以限制协程的生命周期，避免协程的丢失和泄露。外部的协程会一直等到它的所有的子协程都完成后才会完成。
 
 - **Job**
   
   - launch 构建器会返回一个 Job 对象，通过这个对象来启动协程，可以通过 Job 来显示的等待协程完成。
+- **CoroutineDispatcher**： 决定协程应该在哪个线程上运行。
+  - `async` 可指定，如果不指定，则默认使用外层scope的 dispatcher
+  - `Dispatchers.Default` 共享的线程池，提供和 CPU 核心数量相等的线程数量，不过单核也会有两个。
+  - `Dispatchers.Main` 代表 UI 线程
+- 
+
+## 问题
+
+如何控制挂起和恢复的线程？
+
+
 
 
 
@@ -167,14 +182,6 @@ fun main() = runBlocking {
  */
 ```
 
-
-
 ## 仓库
 
 - https://gitee.com/ColorlessAndOdorless/learnkt.git
-
-
-
-
-
-
