@@ -55,20 +55,44 @@ function gen_sidebar() {
   local pathToBaseDir=$2 
   # 父目录的目标写入文件
   local parentFile=$3
+  # 前缀
+  local prefix=$4
+  if [ -z "$prefix" ];then
+    prefix="*"
+  fi
   # 当前目录名称
   local dirName=$(basename "$currentDir")
 
-  echo -e "\ngen_sidebar currentDir=$currentDir pathToBaseDir=$pathToBaseDir dirName=$dirName"
+  echo  "\ngen_sidebar currentDir=$currentDir pathToBaseDir=$pathToBaseDir dirName=$dirName prefix=$prefix"
 
   #当前要写入的文件
   local targetFile="$currentDir/_sidebar.md"
 
-  echo -e "\n" >> "$targetFile"
+  echo  "\n" >> "$targetFile"
   if [ -z "$pathToBaseDir" ];then
-    echo "* Home" > "$targetFile"
+      echo  "$prefix Home" > "$targetFile"
   else
-    echo "* $dirName" > "$targetFile"
+      echo  "$prefix $dirName" > "$targetFile"
   fi
+
+  # 遍历当前目录
+  for item in "$currentDir"/*; do
+    # 目录
+    if [ -f "$item" ] && [[ $(basename "$item") != _* ]]; then
+      local item_name=$(basename "$item" )
+      echo  "item_name=$item_name"
+      if [ "$item_name" != "README.md" ] && [[ $item_name != index* ]];then
+        # 写入到上层中
+        if [ -f "$parentFile" ];then
+            echo  "  $prefix [${item_name%.*}]($pathToBaseDir/${item_name%.*}.md)" >> "$parentFile"
+        fi
+        echo  "  $prefix [${item_name%.*}]($pathToBaseDir/${item_name%.*}.md)" >> "$targetFile"
+        #echo "is $item_name readme"
+      else
+        echo "Skip: $item"
+      fi
+    fi
+  done
  
   # 遍历当前目录
   for item in "$currentDir"/*; do
@@ -76,23 +100,13 @@ function gen_sidebar() {
     if [ -d "$item" ] && [[ $(basename "$item") != _* ]]; then
       # 获取目录名称
       local item_name=$(basename "$item")
-      echo "* ${item_name%.*}" >> "$targetFile"
+      echo  "$prefix ${item_name%.*}" >> "$targetFile"
       local childDirToBaseDirPath="$pathToBaseDir/$item_name"
-      gen_sidebar "$item" $childDirToBaseDirPath $targetFile
-    elif [ -f "$item" ] && [[ $(basename "$item") != _* ]]; then
-      local item_name=$(basename "$item" )
-      echo "item_name=$item_name"
-      if [ "$item_name" != "README.md" ] && [[ $item_name != index* ]];then
-        if [ -f "$parentFile" ];then
-            echo "  * [${item_name%.*}]($pathToBaseDir/${item_name%.*}.md)" >> "$parentFile"
-        fi
-        echo "  * [${item_name%.*}]($pathToBaseDir/${item_name%.*}.md)" >> "$targetFile"
-        #echo "is $item_name readme"
-      else
-        echo "Skip: $item"
-      fi
+      gen_sidebar "$item" $childDirToBaseDirPath $targetFile "$prefix"
     fi
   done
+
+  
 }
 
 
@@ -101,7 +115,7 @@ function refresh_navibar(){
 }
 
 function refresh_index(){
-   gen_index "$(pwd)" ""
+   gen_index "$(pwd)" "" "\*"
 }
 
 function refresh_sidebar(){
