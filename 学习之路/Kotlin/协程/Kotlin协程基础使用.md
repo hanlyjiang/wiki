@@ -71,8 +71,9 @@ fun threadName(): String = Thread.currentThread().name
   - 挂起函数可以在协程中像正常函数一样使用，不过它还有一些额外的特性：
     
     - 可以调用其他挂起函数来挂起协程的执行
+
 - **coroutine scope**：
-  - 
+  -
 
 - **Scope Builder**：（协程作用域构建器）
   
@@ -87,29 +88,64 @@ fun threadName(): String = Thread.currentThread().name
     - coroutineScope 不会阻塞底层线程，因为它是一个**挂起函数**
   
   - coroutineScope 可以被用在任意挂起函数内部用于创建多个并行操作。
+  
+  - GlobalScope：绑定到应用生命周期的 scope，顶级的独立协程
+    
+    - 在 GlobalScope 中启动的协程是完全独立的，生命周期只受限与整个应用的生命周期
+    
+    - 在 GlobalScope 中启动的协程无法向结构化并行中一样自动完成或取消，不过你可以存储它的引用，然后手动等待其完成或者取消。
 
-- **coroutine context**：
-
-- 
+- **Coroutine context**：
+  
+  - 待补充
 
 - **结构化并行**：Kotlin协程遵循的原则，即：新的协程只能在指定的 CoroutineScope 中被启动，这样可以限制协程的生命周期，避免协程的丢失和泄露。外部的协程会一直等到它的所有的子协程都完成后才会完成。
+  
+  - 子协程的生命周期绑定到 scope 上
+  
+  - 在发生错误或者用户取消操作时，scope 可以自动取消所有的子协程
+  
+  - scope 自动等待所有子协成执行完毕，如果 scope 关联到一个协程，那么直到该协程中启动的所有子协程完成之前，这个父协程不会结束。
 
 - **Job**
   
   - launch 构建器会返回一个 Job 对象，通过这个对象来启动协程，可以通过 Job 来显示的等待协程完成。
+
 - **CoroutineDispatcher**： 决定协程应该在哪个线程上运行。
+  
   - `async` 可指定，如果不指定，则默认使用外层scope的 dispatcher
   - `Dispatchers.Default` 共享的线程池，提供和 CPU 核心数量相等的线程数量，不过单核也会有两个。
   - `Dispatchers.Main` 代表 UI 线程
-- 
+
+- **Channels**: 用于协程间通讯的组件，类似于生产消费模式，一端发送，一端接收，实现协程间通讯。
+
+- **取消协程**：
+  
+  - 所有 `kotlinx.coroutines` 包中的挂起函数都是可以取消的。它们会检测协程的取消动作并且在取消时抛出一个  [CancellationException](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-cancellation-exception/index.html)
+  
+  - 不过，如果协程正在执行一项计算，并且没有检测取消动作，那么它就不会被取消
+  
+  - 如何使得计算代码可取消：
+    
+    - 在计算代码中检查 isActive 属性（isActive 是通过 CoroutineScope 创建的协程中的一个扩展属性）
+    
+    - 通过try finally 或 use 来在协程取消时关闭资源
+    
+    - finally 中使用挂起函数会抛出 CancellationException 异常，因为挂起函数是可以被挂起的，所以一般不建议这么做；如果确实需要，则可以通过 `withContext(NonCancellable) {...}` 包装代码来规避，使之不可取消；
+  
+  - 超时取消：
+    
+    - 通过 `withTimeout` 可以使得协程超时时取消，会抛出 kotlinx.coroutines.TimeoutCancellationException 异常，实际上是 [CancellationException](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-cancellation-exception/index.html) 的子类
+    
+    - 通过`try {...} catch (e: TimeoutCancellationException) {...}`包裹之后可以在超时取消时执行一些逻辑
+    
+    - 如果不需要做任何处理，则可以使用  [withTimeoutOrNull](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-timeout-or-null.html)，这样就不会抛出异常，只是返回 null
+    
+    - withTimeout 的超时事件相对于运行于它包裹的代码块中的代码是异步的，它有可能在任意时刻发生，有可能在 withTimeout block 代码返回之前发生，如果在withTimeout block 中获取需要关闭的资源，但是在外部关闭，则有可能没有正确关闭，需要在外部持有其引用，以正确的关闭；（[Cancellation and timeouts | Kotlin Documentation](https://kotlinlang.org/docs/cancellation-and-timeouts.html#asynchronous-timeout-and-resources)）
 
 ## 问题
 
 如何控制挂起和恢复的线程？
-
-
-
-
 
 ## 示例说明
 
@@ -182,6 +218,18 @@ fun main() = runBlocking {
  */
 ```
 
+
+
 ## 仓库
 
 - https://gitee.com/ColorlessAndOdorless/learnkt.git
+
+
+
+
+
+# Channels
+
+编写具有共享可变状态的代码相当困难且容易出错（例如在使用回调的解决方案中）。一种更简单的方法是通过通信而不是使用常见的可变状态共享信息。Coroutines可以通过渠道相互沟通。
+
+![Using channels](https://kotlinlang.org/docs/images/using-channel.png "Using channels")
